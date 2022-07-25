@@ -1,7 +1,9 @@
 package com.zhalkhas.phoenix_native
 
 import android.app.Activity
+import android.content.Context
 import androidx.annotation.NonNull
+import com.jakewharton.processphoenix.ProcessPhoenix
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -15,16 +17,20 @@ import io.flutter.plugin.common.MethodChannel.Result
 class PhoenixNativePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private lateinit var channel: MethodChannel
     private var activity: Activity? = null
-
+    private lateinit var context: Context
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "phoenix_native")
         channel.setMethodCallHandler(this)
+
+        context = flutterPluginBinding.applicationContext
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         if (call.method == "restart") {
-            activity?.recreate()
+//            activity?.recreate()
+            ProcessPhoenix.triggerRebirth(context)
+
             result.success(true)
         } else {
             result.notImplemented()
